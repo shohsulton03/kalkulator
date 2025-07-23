@@ -81,8 +81,15 @@ export class BotService {
       const percent = Number(percentStr);
       const total = baseTotal + (baseTotal * percent) / 100;
       const monthly = total / parseInt(month);
-      result += `${month} oy: ${monthly.toLocaleString()} so‘m\n`;
+
+      const formatted = new Intl.NumberFormat('ru-RU', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(monthly);
+
+      result += `${month} oy: ${formatted} so‘mdan\n`;
     }
+
 
     await ctx.reply(result, { parse_mode: 'HTML' });
 
