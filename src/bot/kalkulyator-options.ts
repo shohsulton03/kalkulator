@@ -7,18 +7,14 @@ export const kalkulyatorOptions = {
       '12': 44,
     },
   },
-//   azon: {
-//     name: 'Azon',
-//     rates: {
-//       '3': 18,
-//       '6': 25,
-//     },
-//   },
-//   wildBeries: {
-//     name: 'Wild Beries',
-//     rates: {
-//       '3': 20,
-//       '6': 27,
-//     },
-//   },
+  starPower: {
+    name: 'StarPower',
+    type: 'customFormula',
+    rates: {
+      '3': 25,
+      '6': 42,
+      '9': 57,
+      '12': 72,
+    },
+  },
 };

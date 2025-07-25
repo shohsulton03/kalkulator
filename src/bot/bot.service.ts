@@ -49,7 +49,7 @@ export class BotService {
   }
 
   async onBack(ctx: MyContext) {
-    await ctx.reply("Bosh menu", {
+    await ctx.reply('Bosh menu', {
       parse_mode: 'HTML',
       ...Markup.keyboard([['Kanal', 'Kalkulator']]).resize(),
     });
@@ -67,34 +67,57 @@ export class BotService {
     }
 
     const company = kalkulyatorOptions[companyKey];
-
-    let extraPercent = 0;
-    if (sum <= 3_000_000) extraPercent = 21;
-    else if (sum <= 8_000_000) extraPercent = 16;
-    else extraPercent = 11;
-
-    const baseTotal = sum + (sum * extraPercent) / 100;
-
     let result = `<b>${company.name}</b> uchun hisob-kitob:\n`;
 
-    for (const [month, percentStr] of Object.entries(company.rates)) {
-      const percent = Number(percentStr);
-      const total = baseTotal + (baseTotal * percent) / 100;
-      const monthly = total / parseInt(month);
+    if (company.type === 'customFormula') {
+      const format = (num: number, fractionDigits = 2) =>
+        new Intl.NumberFormat('ru-RU', {
+          minimumFractionDigits: fractionDigits,
+          maximumFractionDigits: fractionDigits,
+          useGrouping: true,
+        }).format(num);
 
-      const formatted = new Intl.NumberFormat('ru-RU', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(monthly);
+      for (const [monthStr, percent] of Object.entries(company.rates)) {
+        const month = parseInt(monthStr);
+        const foiz = Number(percent);
 
-      result += `${month} oy: ${formatted} so‘mdan\n`;
+        const umumiySumma = sum + (sum * foiz) / 100;
+        const boshlangichTolov = umumiySumma * 0.25;
+        const qolganSumma = umumiySumma - boshlangichTolov;
+        const oylikTolov = qolganSumma / month;
+
+        const formattedTotal = format(umumiySumma, 2);
+        const formattedFirst = format(boshlangichTolov, 2);
+        const formattedMonthly = format(oylikTolov, 3);
+
+        result += `${month} oy: Umumiy: ${formattedTotal} so‘m, Boshlang‘ich: ${formattedFirst} so‘m, Oylik: ${formattedMonthly} so‘m\n`;
+      }
+    } else {
+      // default (UZUM) hisoblash
+      let extraPercent = 0;
+      if (sum <= 3_000_000) extraPercent = 21;
+      else if (sum <= 8_000_000) extraPercent = 16;
+      else extraPercent = 11;
+
+      const baseTotal = sum + (sum * extraPercent) / 100;
+
+      for (const [month, percentStr] of Object.entries(company.rates)) {
+        const percent = Number(percentStr);
+        const total = baseTotal + (baseTotal * percent) / 100;
+        const monthly = total / parseInt(month);
+
+        const formatted = new Intl.NumberFormat('ru-RU', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        }).format(monthly);
+
+        result += `${month} oy: ${formatted} so‘mdan\n`;
+      }
     }
-
 
     await ctx.reply(result, { parse_mode: 'HTML' });
 
     const companyCount = Object.keys(kalkulyatorOptions).length;
-
     if (companyCount === 1) {
       await ctx.reply(
         'Summani kiriting:',
