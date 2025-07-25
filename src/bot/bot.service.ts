@@ -88,9 +88,9 @@ export class BotService {
 
         const formattedTotal = format(umumiySumma, 2);
         const formattedFirst = format(boshlangichTolov, 2);
-        const formattedMonthly = format(oylikTolov, 3);
+        const formattedMonthly = format(oylikTolov, 2);
 
-        result += `${month} oy: Umumiy: ${formattedTotal} so‘m, Boshlang‘ich: ${formattedFirst} so‘m, Oylik: ${formattedMonthly} so‘m\n`;
+        result += `${month} oy: Umumiy: ${formattedTotal} so‘m, Boshlang‘ich: ${formattedFirst} so‘m, Oylik: ${formattedMonthly} so‘mdan\n`;
       }
     } else {
       // default (UZUM) hisoblash
